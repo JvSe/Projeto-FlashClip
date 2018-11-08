@@ -21,7 +21,7 @@ background.x = display.contentCenterX
 background.y = display.contentCenterY
 background.xScale = 1.2
     -- Fim Background --
-
+    -- Tilesets --
 local primeiroTileset = tilesets.novo('SciFi/solo1.png',76.8,25.6,35,290)
 tilesets.desenhar(primeiroTileset,"solo")
 
@@ -39,6 +39,7 @@ tilesets.desenhar(quintoTileset,"solo")
 
 local sextoTileset = tilesets.novo('SciFi/solo1.png',76.8,25.6,460,290)
 tilesets.desenhar(sextoTileset,"solo")
+    -- Fim Tilesets --
 -- # Fim Desenhando o cenario # --
 
 -- # Desenhando o Sprite # --
@@ -59,18 +60,18 @@ local Robo_sequences = {
         time=800,
     },
     { --Robo Correndo para Direita
-        name='robo-andando-direita',
+        name='robo-correndo-direita',
         start=21,
         count=8,
         time=600,
     },
-    {
-        name='robo-andando-esquerda',
+    { --Robo Correndo para Esquerda
+        name='robo-correndo-esquerda',
         start=50,
         count=6,
         time=600,
     },
-    {
+    {-- Robo Pulando para Direita
         name='robo-pulando-direita',
         start=11,
         count=10,
@@ -89,7 +90,7 @@ heroi:play()
 -- Botões -- 
 local function andarDireita( event )
     if ( "ended" == event.phase ) then
-        heroi:setSequence("robo-andando-direita")
+        heroi:setSequence("robo-correndo-direita")
         heroi:play()
         heroi:applyLinearImpulse( 0.01, 0, heroi.x, heroi.y )
     else
@@ -99,14 +100,13 @@ end
 
 local function andarEsquerda( event )
     if ( "ended" == event.phase ) then
-        heroi:setSequence("robo-andando-esquerda")
+        heroi:setSequence("robo-correndo-esquerda")
         heroi:play()
         heroi:applyLinearImpulse( -0.01, 0, heroi.x, heroi.y )
     end
 end
 
 local function pular( event )
-    heroi:setSequence("robo-andando-direita")
     if ( "ended" == event.phase ) then
         heroi:setSequence("robo-pulando-direita")
         heroi:play()
