@@ -4,141 +4,167 @@
 --
 -----------------------------------------------------------------------------------------
 
--- # Configurações Iniciais # --
-local tilesets = require("subprogramas.tilesets")
-local spritesheet = require("subprogramas.spritesheet")
-local physics = require("physics")
-local widget = require( "widget" )
+-- CARREGANDO AS BIBLIOTECAS DO CORONA -- 
+local physics = require( "physics" )
+local widget = require("widget")
 physics.start()
-physics.setGravity(0,10)
--- # Fim das confogurações # --
 
--- # Desenhando o cenario # --
-
-    -- Backgroung --
-local background = display.newImageRect('SciFi/BG_SciFi.png',500,280)
-background.x = display.contentCenterX
+-- DESENHANDO O BACKGROUND --
+local background = display.newImageRect('SciFi/BG_SciFi.png',1500,280)
+background.x = 0
 background.y = display.contentCenterY
-background.xScale = 1.2
-    -- Fim Background --
-    -- Tilesets --
-local primeiroTileset = tilesets.novo('SciFi/solo1.png',76.8,25.6,35,290)
-tilesets.desenhar(primeiroTileset,"solo")
 
-local segundoTileset = tilesets.novo('SciFi/solo1.png',76.8,25.6,105,290)
-tilesets.desenhar(segundoTileset,"solo")
 
-local terceiroTileset = tilesets.novo('SciFi/solo1.png',76.8,25.6,220,290)
-tilesets.desenhar(terceiroTileset,"solo")
+local background2= display.newImageRect('SciFi/BG_SciFi.png',1500,280)
+background2.x = 1500
+background2.y = display.contentCenterY
+-- ###################### --
 
-local quartoTileset = tilesets.novo('SciFi/solo2-3.png',25.6,12.8,290,250)
-tilesets.desenhar(quartoTileset,"solo")
+-- DESENHANDO O SOLO -- 
+local solo = display.newImage('SciFi/solo.png')
+solo.x = 0
+solo.y = 295
+solo.xScale = 0.8
+solo.yScale = 0.3
+physics.addBody(solo,"static")
 
-local quintoTileset = tilesets.novo('SciFi/solo1.png',76.8,25.6,360,290)
-tilesets.desenhar(quintoTileset,"solo")
 
-local sextoTileset = tilesets.novo('SciFi/solo1.png',76.8,25.6,460,290)
-tilesets.desenhar(sextoTileset,"solo")
-    -- Fim Tilesets --
--- # Fim Desenhando o cenario # --
+local solo2 = display.newImage('SciFi/solo.png')
+solo2.x = 1500
+solo2.y = 295
+solo2.xScale = 0.8
+solo2.yScale = 0.3
+physics.addBody(solo2,"static")
+-- ################ --
 
--- # Desenhando o Sprite # --
-local Robo_sheetOptions = 
-{
-    width = 177,
-    height = 173,
-    numFrames = 60,
-    sheetContentWidth = 1771,
-    sheetContentHeigth = 1042,
+-- CONFIGURANDO OS SPRITES -- 
+local sheetOptions = 
+{ 
+    width = 177, 
+    height = 173, 
+    numFrames = 60 
 }
 
-local Robo_sequences = {
-    { --Robo Parado
-        name='robo-idle',
-        start=1,
-        count=10,
-        time=800,
-    },
-    { --Robo Correndo para Direita
-        name='robo-correndo-direita',
-        start=21,
-        count=8,
-        time=600,
-    },
-    { --Robo Correndo para Esquerda
-        name='robo-correndo-esquerda',
-        start=50,
-        count=6,
-        time=600,
-    },
-    {-- Robo Pulando para Direita
-        name='robo-pulando-direita',
-        start=11,
-        count=10,
-        time=1000,
-        loopCount = 1,
-    },
+    -- # CARREGANDO A SPRITESHEET # --
+local sheet = graphics.newImageSheet( "SciFi/Robo_SpriteSheet.png", sheetOptions )
+    -- #            #             # --
+
+    -- # DEFININDO AS ANIMAÇÕES COM O NOME DE "sequencesNOME_DA_ANIMACAO" # --
+local sequencesParado = {
+    {
+        name = "parado",
+        start = 1,
+        count = 10,
+        time = 500,
+    }
+    
 }
 
-local robo = spritesheet.novo('SciFi/Robo_SpriteSheet.png',Robo_sheetOptions,20,260)
-local heroi = spritesheet.desenhar(robo,Robo_sequences,"heroi")
-heroi:setSequence("robo-idle")
-heroi:play()
-
--- # Fim Desenhando o Sprite # --
-
--- Botões -- 
-local function andarDireita( event )
-    if ( "ended" == event.phase ) then
-        heroi:setSequence("robo-correndo-direita")
-        heroi:play()
-        heroi:applyLinearImpulse( 0.01, 0, heroi.x, heroi.y )
-    else
-        heroi:applyLinearImpulse( 0, 0, heroi.x, heroi.y)
-    end
-end
-
-local function andarEsquerda( event )
-    if ( "ended" == event.phase ) then
-        heroi:setSequence("robo-correndo-esquerda")
-        heroi:play()
-        heroi:applyLinearImpulse( -0.01, 0, heroi.x, heroi.y )
-    end
-end
-
-local function pular( event )
-    if ( "ended" == event.phase ) then
-        heroi:setSequence("robo-pulando-direita")
-        heroi:play()
-        heroi:applyLinearImpulse( 0, -0.03, heroi.x, heroi.y )
-    end
-end
- 
-local button1 = widget.newButton(
-    {
-        width = 40,
-        height = 40,
-        defaultFile = "SciFi/botao1-direita.png",
-        onEvent = andarDireita
+local sequencesCorrendo = {
+    { 
+        name = "correndo",
+        start = 21,
+        count = 8,
+        time = 500,
+        loopCount = 0,
+        loopDirection = "forward"
     }
-)
- 
--- Center the button
-button1.x = 90
-button1.y = 250
-button1.alpha = 0.5
 
-local button2 = widget.newButton(
+}
+
+local sequencesPulando = {
     {
-        width = 40,
-        height = 40,
-        defaultFile = "SciFi/botao1-esquerda.png",
-        onEvent = andarEsquerda
+        name = "pulando",
+        start = 11,
+        count = 10,
+        time = 500,
+        loopCount = 1
     }
-)
-button2.x = 40
-button2.y = 250
-button2.alpha = 0.5
+}
+    -- #                                    #                               # -- 
+
+    -- # DESENHANDO O SPRITE(ANIMAÇÃO) NA TELA # --
+local heroiParado = display.newSprite( sheet, sequencesParado )
+heroiParado.x = 20
+heroiParado.y = 253
+heroiParado.xScale = 0.3
+heroiParado.yScale = 0.3
+heroiParado:setSequence("parado")
+heroiParado:play()
+
+local heroiCorrendo = display.newSprite( sheet, sequencesCorrendo )
+heroiCorrendo.x = 20
+heroiCorrendo.y = 253
+heroiCorrendo.xScale = 0.3
+heroiCorrendo.yScale = 0.3
+heroiCorrendo.isVisible = false
+
+local heroiPulando = display.newSprite(sheet, sequencesPulando)
+heroiPulando.x = 20
+heroiPulando.y = 253
+heroiPulando.xScale = 0.3
+heroiPulando.yScale = 0.3
+heroiPulando.isVisible = false
+physics.addBody( heroiPulando, "dynamic", { radius=0, bounce=0.3 } )
+    -- #                #                      # -- 
+
+    -- # ANIMAÇÃO DA TELA EM MOVIMENTO # --
+local tPrevious = system.getTimer()
+local function move(event)
+    
+    local tDelta = event.time - tPrevious
+    tPrevious = event.time
+
+    local xOffset = ( 0.2 * tDelta )
+    background.x = background.x - xOffset
+    background2.x = background2.x - xOffset
+    solo.x = solo.x - xOffset
+    solo2.x = solo2.x - xOffset
+   
+
+    if (background.x + background.contentWidth) < 0 then
+        background:translate( 1500 * 2, 0)
+        solo:translate(1500 * 2, 0)
+        
+    end
+    if (background2.x + background2.contentWidth) < 0 then
+        background2:translate( 1500 * 2, 0)
+        solo2:translate(1500 * 2, 0)
+        
+    end
+    
+end
+    -- #                #               # --
+
+
+    -- # FUNÇÕES PARA A MAGICA ACONTECER # --
+local function iniciar( event )
+    heroiParado.isVisible = false
+    heroiCorrendo.isVisible = true
+    heroiCorrendo:setSequence("correndo")
+    heroiCorrendo:play()
+    
+    Runtime:addEventListener("enterFrame",move)
+end
+
+local function andar()
+    heroiPulando.isVisible = false
+    heroiCorrendo.isVisible = true
+    heroiCorrendo:setSequence("correndo")
+    heroiCorrendo:play()
+end
+
+local function pular(event)
+    heroiCorrendo.isVisible = false
+    heroiPulando.isVisible = true
+    heroiPulando:setSequence("pulando")
+    heroiPulando:play()
+    heroiPulando:applyLinearImpulse( 0, -0.1, heroiPulando.x, heroiPulando.y )
+
+    if ("ended" == event.phase) then
+        andar()
+    end
+end
 
 local button3 = widget.newButton(
     {
@@ -151,7 +177,8 @@ local button3 = widget.newButton(
 button3.x = 400
 button3.y = 250
 button3.alpha = 0.5
--- # Fim Botões # --
+-- faz tudo acontecer
+heroiParado:addEventListener("tap",iniciar)
+heroiPulando:addEventListener("tap",pular)
 
-heroi:addEventListener("tap",andarDireita)
-
+    -- #                 #               # --
